@@ -1,7 +1,10 @@
 flask 
 flask_mail
+flask_sqlalchemy
+flask_login
 pefile
 ssdeep
+scikit-learn
 pyexifinfo
 whois
 beautifulsoup4
@@ -9,3 +12,5 @@ peutils
 virustotal_python
 yara-python
 python-whois
+python-magic
+pandas
