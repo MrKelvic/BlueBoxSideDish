@@ -37,7 +37,7 @@ app = Flask(__name__, template_folder='templates' ,static_url_path='/static')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['YARA_TEST'] = YARATEST
 #app.config['SERVER_NAME'] = "Threat.BlueBox:5000"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bluebox.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'tXkjA3CrTigbZuMeBkHqUW4EEimo6p54'
 db.init_app(app)
@@ -88,8 +88,9 @@ def generate_random_key():
 	else: 
 		pass
 
-@app.before_first_request
-def create_all():
+
+#replace before_first_request decorator
+with app.app_context():
     db.create_all()
     print(generate_random_key())
      
@@ -315,6 +316,5 @@ def scan_file():
 	else:
 		abort(450)
 
-db.init_app(app)
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000,debug=True)
