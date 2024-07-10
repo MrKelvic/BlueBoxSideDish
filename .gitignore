@@ -63,3 +63,4 @@ Db/
 Uploads/
 Keys/*
 *.db
+App/yarascripts/YaraScan/rules_compiled/
