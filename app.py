@@ -63,8 +63,9 @@ mail = Mail(app)
 
  
 def generate_random_key():
+	# print(keymodel.query.all()[0].keys)
+	auth_keys=""
 	if ( not keymodel.query.all()):
-		auth_keys=""
 		for i in range(0,20):
 			k = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(25))
 			k = (hashlib.md5(k.encode()).hexdigest())
@@ -83,10 +84,14 @@ def generate_random_key():
 			mail.send(msg)
 		except:	
 			pass 
-		f  = open("Keys/keys.txt", "w+")
-		f.write(auth_keys)
 	else: 
+		for key in keymodel.query.all():
+			auth_keys += str(key.keys)+' --- '
 		pass
+
+	f  = open("Keys/keys.txt", "w+")
+	f.write(auth_keys)
+	return auth_keys
 
 
 #replace before_first_request decorator
@@ -264,10 +269,12 @@ def Profile_Settings():
 
 @app.route('/url', methods=['POST'])
 @login_required
-def scan_url():
+async def scan_url():
 	if request.method == 'POST':
 		url  = request.form['urladdress']
-		geturltotal = VTotalAPI(url).run()
+		geturltotal = await VTotalAPI(url).run()
+		t = geturltotal
+		print(geturltotal)
 		lexical_features = extract_data(url).results()
 		ml =  malicious_url_ML(url).run()
 		malur = MalUrlsModel(url ,"detected")
@@ -292,11 +299,19 @@ def scan_file():
 			#for file in os.scandir(yarapath):
 			#os.remove(file.path)
 			#file.save(yarapath)
-			filepath = app.config['UPLOAD_FOLDER']+"//"+filename 
+			filepath = app.config['UPLOAD_FOLDER']+"/"+filename 
 			filesize = os.path. getsize(filepath)
 			#print(filepath)
 			calls = calls_nd_strings(filepath).run()
-			yaradetect = yaraScan(filepath).results()
+			yara_scan = yaraScan(filepath)
+			yaradetect = yara_scan.results()
+			detected= yara_scan.detected
+			
+			print("Total:")
+			print(yara_scan.detectionTotal)
+			print("Detection:")
+			print(yara_scan.detectionCount)
+
 			signa = signateur(filepath).check_signateur()
 			Hashes_Data = FileInfo(filepath).run()
 			
@@ -304,15 +319,23 @@ def scan_file():
 			st = strings_all(filepath)
 			strings = st.unicode_strings()
 			email = st.getemail()
+			websiteLinks = st.getwebsite()
 			ip = st.getip()
-			if  next(iter(yaradetect.values()))=="None":
-				detected= True
-			else: 
-				detected = False
+			# if  next(iter(yaradetect.values()))=="None":
+			# 	detected= False
+			# else: 
+			# 	detected = True
 			malfil = MalFilesModel(file.filename, str(Hashes_Data["MD5"]) , str(Hashes_Data["Type"]) ,"detected")
 			db.session.add(malfil)
 			db.session.commit()
-			return render_template('results_file_scan.html',detected = detected , peinfo = peinfo, signaa = signa , filename = filename , filesize = filesize , email = email ,ip=ip , yaradetect = yaradetect,  strings = strings , calls = calls,Hashes_Data = Hashes_Data)
+
+			return render_template('testFileResults.html',detected = detected ,totaldetectionrules=yara_scan.detectionTotal,
+						  totaldetected=yara_scan.detectionCount,
+						   percentage = yara_scan.detectionPercentage(),
+						  peinfo = peinfo, signaa = signa , filename = filename , filesize = filesize , 
+						  email = email ,ip=ip,websiteLinks=websiteLinks , yaradetect = yaradetect,  strings = strings , 
+						  calls = calls,Hashes_Data = Hashes_Data)
+			# return render_template('results_file_scan.html',detected = detected , peinfo = peinfo, signaa = signa , filename = filename , filesize = filesize , email = email ,ip=ip , yaradetect = yaradetect,  strings = strings , calls = calls,Hashes_Data = Hashes_Data)
 	else:
 		abort(450)
 

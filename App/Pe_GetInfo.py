@@ -161,14 +161,13 @@ class PEInfo():
 		if hasattr(self.pe, 'DIRECTORY_ENTRY_IMPORT'):
 			for entry_import in self.pe.DIRECTORY_ENTRY_IMPORT:
 				imp = {
-				'ENTRY NAME': entry_import.dll, 
+				'ENTRY NAME': str(entry_import.dll.decode('utf-8')), 
 				'SYMBOLS': []
 				} 
 		
 			for symbol in entry_import.imports:
 				if symbol.name:
-
-					imp['SYMBOLS'].append(symbol.name)  # symbol.name.decode()
+					imp['SYMBOLS'].append(str(symbol.name.decode('utf-8')))  # symbol.name.decode()
 		return  imp
 
 	#return EntryExports (Address , Name , Ordinal )
@@ -178,12 +177,13 @@ class PEInfo():
 		if hasattr(self.pe, 'DIRECTORY_ENTRY_EXPORT'):
 			for exported_symbol in self.pe.DIRECTORY_ENTRY_EXPORT.symbols:
 				exports.append({
-				'address': hex(self.self.pe.OPTIONAL_HEADER.ImageBase + exported_symbol.address),
-				'name': exported_symbol.name,
+				'address': hex(self.pe.OPTIONAL_HEADER.ImageBase + exported_symbol.address),
+				'name': str(exported_symbol.name.decode('utf-8')),
 				'ordinal': exported_symbol.ordinal
 				 })
-	 
-		return json.dumps(exports)
+		
+		return exports
+		# return json.dumps(exports)
 		
 	#return Os Version 	
 	def PE_os(self): 

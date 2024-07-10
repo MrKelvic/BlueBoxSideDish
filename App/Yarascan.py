@@ -2,20 +2,28 @@ import os
 import yara
 import json
 
+
+
 class  yaraScan():
 
 	def __init__(self,filename):
 		self.filename=filename
+		self.detected = False
+		self.detectionTotal = 0
+		self.detectionCount = 0
 
-		
-		
+
+
+	def detectionPercentage(self):
+		return (self.detectionCount/self.detectionTotal) * 100
+
 	def results(self):
 		results={}
-		results={
-		'Malware': '%s' % self.is_malware(),
-		'AntiVm' : '%s' %self.is_antidb_antivm() ,
-		'Crypto Used': '%s' % self.check_crypto(),
-		'File Packed': '%s' %self.is_file_packed(),
+		self.results = {
+			'Malware':self.is_malware()+self.is_malicious_document(),
+			'AntiVm' :self.is_antidb_antivm() ,
+			'Crypto':self.check_crypto(),
+			'File Packs':self.is_file_packed(),
 		}
 		return results
 
@@ -23,6 +31,8 @@ class  yaraScan():
 	def is_file_packed(self):
 		""" These Yara YaraScan/rules aimed to detect well-known software packers, that can be used by malware to hide itself.
 		"""
+		#Make a list of all detected signatures
+		matches = set([])
 		if not os.path.exists("App/yarascripts/YaraScan/rules_compiled/packers"):
 			os.mkdir("App/yarascripts/YaraScan/rules_compiled/packers")
 		for n in os.listdir("App/yarascripts/YaraScan/rules/packers"):
@@ -31,10 +41,12 @@ class  yaraScan():
 			rule = yara.load("App/yarascripts/YaraScan/rules_compiled/packers/" + n)
 			m = rule.match(self.filename)
 			if m:
-				return m
+				matches.update(m)
+		return list(matches)
 
 
 	def is_malicious_document(self):
+		matches = set([])
 		if not os.path.exists("App/yarascripts/YaraScan/rules_compiled/maldocs"):
 			os.mkdir("App/yarascripts/YaraScan/rules_compiled/maldocs")
 		for n in os.listdir("App/yarascripts/YaraScan/rules/maldocs"):
@@ -42,11 +54,17 @@ class  yaraScan():
 			rule.save("App/yarascripts/YaraScan/rules_compiled/maldocs/" + n)
 			rule = yara.load("App/yarascripts/YaraScan/rules_compiled/maldocs/" + n)
 			m = rule.match(self.filename)
+			self.detectionTotal+=1
+			print(self.detectionTotal)
 			if m:
-				return m
+				matches.update(m)
+				self.detected = True
+				self.detectionCount+=1
+		return list(matches)
 
 
 	def is_antidb_antivm(self):
+		matches = set([])
 		if not os.path.exists("App/yarascripts/YaraScan/rules_compiled/antidebug_antivm"):
 			os.mkdir("App/yarascripts/YaraScan/rules_compiled/antidebug_antivm")
 		for n in os.listdir("App/yarascripts/YaraScan/rules/antidebug_antivm"):
@@ -55,13 +73,15 @@ class  yaraScan():
 			rule = yara.load("App/yarascripts/YaraScan/rules_compiled/antidebug_antivm/" + n)
 			m = rule.match(self.filename)
 			if m:
-				return m
-
+				matches.update(m)
+		return list(matches)
+	
 
 	def check_crypto(self):
 		"""These Yara YaraScan/rules aimed to detect the existence of cryptographic algorithms.
 		Detected cryptographic algorithms: 
 		"""
+		matches = set([])
 		if not os.path.exists("App/yarascripts/YaraScan/rules_compiled/crypto"):
 			os.mkdir("App/yarascripts/YaraScan/rules_compiled/crypto")
 		for n in os.listdir("App/yarascripts/YaraScan/rules/crypto"):
@@ -70,12 +90,14 @@ class  yaraScan():
 			rule = yara.load("App/yarascripts/YaraScan/rules_compiled/crypto/" + n)
 			m = rule.match(self.filename)
 			if m:
-				return m
+				matches.update(m)
+		return list(matches)
 
 
 	def is_malware(self):
 		""" These Yara YaraScan/rules specialised on the identification of well-known malware.
 		"""
+		matches = set([])
 		if not os.path.exists("App/yarascripts/YaraScan/rules_compiled/malware"):
 			os.mkdir("App/yarascripts/YaraScan/rules_compiled/malware")
 		for n in os.listdir("App/yarascripts/YaraScan/rules/malware/"):
@@ -85,12 +107,17 @@ class  yaraScan():
 					rule.save("App/yarascripts/YaraScan/rules_compiled/malware/" + n)
 					rule = yara.load("App/yarascripts/YaraScan/rules_compiled/malware/" + n)
 					m = rule.match(self.filename)
+					self.detectionTotal+=1
+					print(self.detectionTotal)
 					if m:
-						return m
+						matches.update(m)
+						self.detected = True
+						self.detectionCount+=1
 				except:
 					pass  # internal fatal error or warning
 			else:
 				pass
+		return list(matches)
 
 
 	# Added by Yang

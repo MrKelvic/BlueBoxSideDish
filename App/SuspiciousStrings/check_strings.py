@@ -50,13 +50,13 @@ class strings_all():
 
 	def getemail(self):
 		if not self.is_email(self.ascii_strings()):
-			return "No Email Found "
+			return list()
 		else:
 			return self.is_email(self.ascii_strings())
 	
 	def getip(self):
 		if not self.is_ip(self.ascii_strings()):
-			return "No Ip Found "
+			return list()
 		else:
 			return self.is_ip(self.ascii_strings())
 	

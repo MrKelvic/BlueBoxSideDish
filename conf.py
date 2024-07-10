@@ -3,6 +3,6 @@
 
 EMAIL = "exemple@gmail.com"
 PASSWD = ""
-UPLOAD_FOLDER = 'Uploads//'
+UPLOAD_FOLDER = 'Uploads'
 YARATEST = 'yarascripts//yaragen//YaraGenerator//test//'
 ALLOWED_EXTENSIONS = set(['exe', 'bin'])

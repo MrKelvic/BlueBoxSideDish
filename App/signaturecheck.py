@@ -16,8 +16,8 @@ class signateur():
 		results = {} 
 
 		results={
-		"checksum_mismatch": False,
-		"no_signature": False,
+		"checksum mismatch": False,
+		"no signature": False,
 		"verified": False,
 		"corrupted": False,
 		}
@@ -31,9 +31,9 @@ class signateur():
 		
 		if output:
 			if p.returncode == 1 and "MISMATCH" in output:
-				results["checksum_mismatch"] = True
+				results["checksum mismatch"] = True
 			if "No signature found" in output: 
-				results["no_signature"] = True 
+				results["no signature"] = True 
 			if "Signature verfification: ok" in output:
 				results["verified"]= True
 			if "Corrupt PE file" in output:
