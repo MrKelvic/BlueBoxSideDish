@@ -4,7 +4,7 @@ venv="blueboxsidedishvenv"
 working_dir=$(pwd)
 dependancies="requirements.txt"
 db_name="bluebox.db"
-upload_dir="Upload"
+upload_dir="Uploads"
 keys_dir="Keys"
 
 
