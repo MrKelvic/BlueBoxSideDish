@@ -157,7 +157,7 @@ class PEInfo():
 
 	#return EntryImports (Entry_Name , Symbols)
 	def PE_enty_import(self): 
-		imports = []
+		imp = {}
 		if hasattr(self.pe, 'DIRECTORY_ENTRY_IMPORT'):
 			for entry_import in self.pe.DIRECTORY_ENTRY_IMPORT:
 				imp = {

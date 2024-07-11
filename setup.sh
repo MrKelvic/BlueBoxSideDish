@@ -19,8 +19,17 @@ fi
 
 
 #apt installs
-sudo apt-get install osslsigncode libimage-exiftool-perl build-essential libffi-dev libfuzzy-dev sqlite3 python3.12-venv python-dev-is-python3 python3-pip
+sudo apt-get install osslsigncode libimage-exiftool-perl build-essential libffi-dev libfuzzy-dev sqlite3 python3-venv python-dev-is-python3 python3-pip
 
+pip3 install virtualenv 
+
+echo "**Installing python virtual env. "
+if [ $? -ne 0 ]; then
+    echo "**Something went wrong :("
+    exit 0
+else
+    echo "**Python venv installed"
+fi
 
 #check if venv exists if none create one
 if [ ! -d $working_dir/$venv ]; then

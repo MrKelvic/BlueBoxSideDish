@@ -269,10 +269,10 @@ def Profile_Settings():
 
 @app.route('/url', methods=['POST'])
 @login_required
-async def scan_url():
+def scan_url():
 	if request.method == 'POST':
 		url  = request.form['urladdress']
-		geturltotal = await VTotalAPI(url).run()
+		geturltotal = VTotalAPI(url).run()
 		t = geturltotal
 		print(geturltotal)
 		lexical_features = extract_data(url).results()
