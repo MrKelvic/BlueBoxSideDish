@@ -273,14 +273,15 @@ def scan_url():
 	if request.method == 'POST':
 		url  = request.form['urladdress']
 		geturltotal = VTotalAPI(url).run()
-		t = geturltotal
 		print(geturltotal)
 		lexical_features = extract_data(url).results()
 		ml =  malicious_url_ML(url).run()
-		malur = MalUrlsModel(url ,"detected")
-		db.session.add(malur)
-		db.session.commit()
-		return render_template('results_url_scan.html',lexical_features = lexical_features , geturltotal = geturltotal , ml=ml)
+		detect = geturltotal["malicious"]
+		# malur = MalUrlsModel(url ,"detected")
+		# db.session.add(malur)
+		# db.session.commit()
+		return render_template('testFileResults.html',
+						 lexical_features = lexical_features , geturltotal = geturltotal , ml=ml)
 	else:
 		abort(450)
 
@@ -329,7 +330,7 @@ def scan_file():
 			db.session.add(malfil)
 			db.session.commit()
 
-			return render_template('testFileResults.html',detected = detected ,totaldetectionrules=yara_scan.detectionTotal,
+			return render_template('results_file_scan.html',detected = detected ,totaldetectionrules=yara_scan.detectionTotal,
 						  totaldetected=yara_scan.detectionCount,
 						   percentage = yara_scan.detectionPercentage(),
 						  peinfo = peinfo, signaa = signa , filename = filename , filesize = filesize , 
