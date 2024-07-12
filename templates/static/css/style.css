@@ -60,9 +60,11 @@ File: style.css
 body {
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
-  color: #888;
+  /* color: #f5f1f1;
+  background: #0f0f0f !important; */
+  /* color: #111111;
+  background: #f4f7fa !important; */
   font-weight: 400;
-  background: #f4f7fa !important;
   position: relative;
 }
 

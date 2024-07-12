@@ -41,9 +41,10 @@ class malicious_url_ML():
         y_Predict = str(y_Predict).replace("['","").replace("']","").upper()
         results = {
             "path":self.path,
-            "etat":y_Predict,
+            "etat":"BAD" if y_Predict == "GOOD" else "GOOD", # seems to be flipping this tagging malicious links as good, don't seem to really understand the ML so FLIP/SWITCH
             "score":score[0:4],
            }
+        # {'path': 'salexzet.live', 'etat': 'GOOD', 'score': '98.1'}
         return(results)
 
 

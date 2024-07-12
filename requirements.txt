@@ -15,3 +15,5 @@ python-whois
 python-magic
 pandas
 pydig
+selenium
+pyppeteer

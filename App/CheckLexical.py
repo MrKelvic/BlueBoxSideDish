@@ -23,7 +23,7 @@ class extract_data():
         "Domain": self.returnDomain(), 
         "Secure": self.HttpsToken(), 
         "DNS":self.DNS(),
-		"UrlRespose": self.UrlRespose(), 
+		"UrlResponse": self.UrlRespose(), 
 		"DOMRedirects": self.DOMRedirects(),
 		"MetaTags": self.GetMetaTagsURL(), 
 		"Links": self.GetLinksFromURL(),
@@ -48,7 +48,7 @@ class extract_data():
         return results
 		
     def urlTOhttp(self):
-        if not re.match(r"^https?", self.url):
+        if not (re.match(r"^https?", self.url) or re.match(r"^http?", self.url)):
             self.url = "http://" + self.url
             
         parsed_url = urlparse(self.url)
@@ -127,7 +127,7 @@ class extract_data():
             return 'True'
 
     def HttpsToken(self):
-        result = "True" if re.findall(r"^https://", self.url) else "False"
+        result = True if re.findall(r"^https://", self.url) else False
         return result
 
     def GetResponse(self):
@@ -225,6 +225,7 @@ class extract_data():
 
     def UrlRespose(self):
         ret = {}
+        
         ret["status"] = self.response.status_code
         if self.response.history:
             ret["redirect"] = self.response.url

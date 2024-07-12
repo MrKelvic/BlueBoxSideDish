@@ -16,12 +16,15 @@
 ==========================  **/
 
 html{
-  background: #181818 !important;
+  /* background: #181818 !important; */
+  background: #ffffff !important;
 }
 body {
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
-  color: #fff;
+  /* color: #fff; */
+  color: #161616;
+  background: #ffffff !important;
   font-weight: 400;
   position: relative;
   width:90%;

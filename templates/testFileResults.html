@@ -24,140 +24,145 @@
         <![endif]-->
         <div class="w-100 p-2">
             <div class="px-2">
-                <h3 class="fs-5">File overview</h3>
+                <h3 class="fs-5">URL overview </h3>
+                <p>{{screenshot}}</p>
                 <div class="flex justify-content-between">
                     <div>
                         {% if detected %}
                         <h1 class="text-danger fs-5">Malicious</h1>
+                        <p class="" title="provided by virus total">flagged by {{virustotalresponse.malicious}} vendors on virus total</p>
                         {%else%}
                         <h1 class="text-success fs-5">Clean</h1>
                         {% endif%}
-                        <h2>{{filename}}</h2>
-                        <p>Size: {{filesize}}</p>
-                        <div class="flex">
-                            {% for a,b in signaa.items() %}
+                        <div class="flex align-items-center">
                             <div class="border px-1 mr-1">
-                                <span class="">{{a}}</span>
+                                {% if lexical_features.Secure %}
+                                <span class="">Secure</span>
                                 <span class="">
-                                    {% if b %}
-                                    <i class="fas fa-check-circle text-success"></i>
-                                    {%else%}
-                                    <i class="fas fa-window-close text-danger"></i>
-                                    {%endif%}
+                                    <i class="fas fa-lock text-success"></i>
                                 </span>
+                                {%else%}
+                                <span class="">Not Secure</span>
+                                <span class="">
+                                    <i class="fas fa-lock-open text-danger"></i>
+                                </span>
+                                {%endif%}
                             </div>
-                            {% endfor %}
+                            <h2>{{lexical_features.Base}}</h2>
                         </div>
                     </div>
-                    <div>
-                        <div
-                            class="radial-progress"
-                            style="--value: {{percentage}}; --size:6rem; --thickness:6px;"
-                            role="progressbar">
-                            {{percentage}}
+                </div>
+                <div class="my-4">
+                    <p class="mb-1 border-top border-bottom p-2">URL Internet Infrastructure</p>
+                    <div class="w-100 px-2 py-2">
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Base</span>
+                            <span class="" style="flex: 0 1 90%;">{{lexical_features.Base}}</span>
                         </div>
-                        <div class="text-center">{{totaldetected}} / {{totaldetectionrules}}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="my-4">
-                <p class="mb-1 border-top border-bottom p-2">Properties</p>
-                <div class="w-100 px-2 py-2">
-                    {% for hashes, value in Hashes_Data.items() %}
-                    <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
-                        <span class="" style="flex: 0 1 10%;">{% print(hashes)%}</span>
-                        <span class="" style="flex: 0 1 90%;">{% print( value ) %}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="my-4">
-                <p class="mb-1 border-top border-bottom p-2">IPs,URLs,emails</p>
-                <div class="w-100 px-2 py-2">
-                    {%for ips in ip%}
-                        <span class="border px-2 m-1">{% print(ips) %}</span>
-                    {%endfor%}
-                    {%for link in websiteLinks%}
-                        <span class="border px-2 m-1">{% print(link) %}</span>
-                    {%endfor%}                    
-                    {%for emails in email%}
-                        <span class="border px-2 m-1">{% print(emails) %}</span>
-                    {%endfor%}
-                </div>
-            </div>
-            <div class="my-4">
-                <p class="mb-1 border-top border-bottom p-2">Portable exportable</p>
-                <div class="w-100 px-2 py-2">
-                    {% for a, b in peinfo.items() %}
-                    <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
-                        <div class="" style="flex: 0 1 10%;">{% print(a)%}</div>
-                        <div class="" style="flex: 0 1 90%;">
-                            {% if b is iterable and b is not string %}
-                                {% if b is mapping %}
-                                    <!-- Dictionary -->
-                                     {%for key,value in b.items()%}
-                                        {%if value is iterable and value is not string%}
-                                        <span>
-                                            <span>
-                                                {%print(key)%} : 
-                                            </span>
-                                            {%for innerItem in value%}
-                                                <span class="border px-1">{%print(innerItem)%}</span>
-                                            {%endfor%}
-                                        </span>
-                                        {%else%}
-                                        <span>
-                                            <span>
-                                                {%print(key)%} : 
-                                            </span> 
-                                            <span class="border px-1">{%print(value)%}</span>
-                                        </span>
-                                        {%endif%}
-                                     {%endfor%}
-                                {%elif b is sequence%}
-                                    <!-- Is arr -->
-                                    {%for st in b%}
-                                        {%if st is iterable and st is not string%}
-                                            {%for key,value in st.items()%}
-                                            <span>
-                                                <span>
-                                                    {%print(key)%} : 
-                                                </span>
-                                                <span class="border px-1">{%print(value)%}</span></span>
-                                            {%endfor%}
-                                        {%else%}
-                                        <span class="border px-2 m-1">{% print(st) %}</span>
-                                        {%endif%}
-                                    {%endfor%}
-                                 {%endif%}
-                            {%else%}
-                            <!-- normal string -->
-                                {% print( b ) %}
-                            {%endif%}
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Domain</span>
+                            <span class="" style="flex: 0 1 90%;">{{lexical_features.Domain}}</span>
                         </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="my-4">
-                <p class="mb-1 border-top border-bottom p-2">Yara rules detections</p>
-                <div class="w-100 px-2 py-2">
-                    {% for hashes, value in yaradetect.items() %}
-                    <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
-                        <div class="" style="flex: 0 1 10%;">{% print(hashes)%}</div>
-                        <div class="" style="flex: 0 1 90%;">
-                            {%if value is sequence%}
-                                {%for st in value%}
-                                    <span class="border px-2 m-1">{% print(st) %}</span>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Response</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for key,value in lexical_features.UrlResponse.items()%}
+                                <span>
+                                    <span>
+                                        {{key}} : 
+                                    </span>
+                                    <span class="border px-1">{{value}}</span></span>
                                 {%endfor%}
-                            {%else%}
-                            <span class="">{% print( value ) %}</span>
-                            {%endif%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">DNS</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for item in lexical_features.DNS%}
+                                <span class="border px-1 d-inline-flex m-1">{{item}}</span>
+                                {%endfor%}
+                            </span>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
+                <div class="my-4">
+                    <p class="mb-1 border-top border-bottom p-2">DOM Properties</p>
+                    <div class="w-100 px-2 py-2">
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Meta Tags</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for key,value in lexical_features.MetaTags.items()%}
+                                <span>
+                                    <span>
+                                        {{key}} : 
+                                    </span>
+                                    <span class="border px-1 d-inline-flex m-1">{{value}}</span></span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Links</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for item in lexical_features.Links%}
+                                <span class="border px-1 d-inline-flex m-1">{{item}}</span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Emails</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for item in lexical_features.Emails%}
+                                <span class="border px-1 d-inline-flex m-1">{{item}}</span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Trackers</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for item in lexical_features.Trackers%}
+                                <span class="border px-1 d-inline-flex m-1">{{item}}</span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">Shortners</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for item in lexical_features.Shortners%}
+                                <span class="border px-1 d-inline-flex m-1">{{item}}</span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                        <div class="inline-flex w-100 my-1" style="gap:0.4rem;">
+                            <span class="" style="flex: 0 1 10%;">HID Events</span>
+                            <span class="" style="flex: 0 1 90%;">
+                                {%for key,value in lexical_features.HIDEvents.items()%}
+                                <span>
+                                    <span>
+                                        {{key}} : 
+                                    </span>
+                                    <span class="border px-1">{{value}}</span></span>
+                                {%endfor%}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4">
+                    <p class="mb-1 border-top border-bottom p-2">DOM Forms</p>
+                    <div class="w-100 px-2 py-2">
+                        {%for value in lexical_features.Forms%}
+                        <div class="w-100 my-1">
+                            <p class="mb-1">{{value.method}} : {{value.target}}</p>
+                            <div>
+                                <code>
+                                    {{value.content}}
+                                </code>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
                 </div>
             </div>
+
         </div>
         
         <script src="" async defer></script>

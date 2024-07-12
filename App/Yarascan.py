@@ -55,7 +55,6 @@ class  yaraScan():
 			rule = yara.load("App/yarascripts/YaraScan/rules_compiled/maldocs/" + n)
 			m = rule.match(self.filename)
 			self.detectionTotal+=1
-			print(self.detectionTotal)
 			if m:
 				matches.update(m)
 				self.detected = True
@@ -108,7 +107,6 @@ class  yaraScan():
 					rule = yara.load("App/yarascripts/YaraScan/rules_compiled/malware/" + n)
 					m = rule.match(self.filename)
 					self.detectionTotal+=1
-					print(self.detectionTotal)
 					if m:
 						matches.update(m)
 						self.detected = True

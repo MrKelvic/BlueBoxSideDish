@@ -23,7 +23,7 @@
                         <p>Size: {{filesize}}</p>
                         <div class="flex">
                             {% for a,b in signaa.items() %}
-                            <div class="border px-1 mr-1">
+                            <span class="border px-1 mr-1">
                                 <span class="">{{a}}</span>
                                 <span class="">
                                     {% if b %}
@@ -32,7 +32,7 @@
                                     <i class="fas fa-window-close text-danger"></i>
                                     {%endif%}
                                 </span>
-                            </div>
+                            </span>
                             {% endfor %}
                         </div>
                     </div>
@@ -62,13 +62,13 @@
                 <p class="mb-1 border-top border-bottom p-2">IPs,URLs,emails</p>
                 <div class="w-100 px-2 py-2">
                     {%for ips in ip%}
-                        <span class="border px-2 m-1">{% print(ips) %}</span>
+                        <span class="border px-2 m-1 d-inline-flex">{% print(ips) %}</span>
                     {%endfor%}
                     {%for link in websiteLinks%}
-                        <span class="border px-2 m-1">{% print(link) %}</span>
+                        <span class="border px-2 m-1 d-inline-flex">{% print(link) %}</span>
                     {%endfor%}                    
                     {%for emails in email%}
-                        <span class="border px-2 m-1">{% print(emails) %}</span>
+                        <span class="border px-2 m-1 d-inline-flex">{% print(emails) %}</span>
                     {%endfor%}
                 </div>
             </div>
@@ -113,7 +113,7 @@
                                                 <span class="border px-1">{%print(value)%}</span></span>
                                             {%endfor%}
                                         {%else%}
-                                        <span class="border px-2 m-1">{% print(st) %}</span>
+                                        <span class="border px-2 m-1 d-inline-flex">{% print(st) %}</span>
                                         {%endif%}
                                     {%endfor%}
                                  {%endif%}
@@ -135,7 +135,7 @@
                         <div class="" style="flex: 0 1 90%;">
                             {%if value is sequence%}
                                 {%for st in value%}
-                                    <span class="border px-2 m-1">{% print(st) %}</span>
+                                    <span class="border px-2 m-1 d-inline-flex">{% print(st) %}</span>
                                 {%endfor%}
                             {%else%}
                             <span class="">{% print( value ) %}</span>
