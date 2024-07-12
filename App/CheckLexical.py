@@ -4,40 +4,62 @@ import whois
 from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
+import pydig
 
 
 class extract_data():
 
     def __init__(self, url):
         self.url = url
+        self.urlTOhttp()
+        self.response = ""
+        self.GetResponse()
 
 
     def results(self):
         results ={}
         results ={
-		"AbnormalURL": self.AbnormalURL(), 
-        "RedirectURL": self.RedirectURL(), 
-        "onmouseover": self.onmouseover(), 
-        "Rightclick": self.Rightclick(), 
-        "PopUpWindow": self.PopUpWindow(),
-        "symboles": self.symboles(), 
-        "prefixURL": self.prefixURL(), 
-        "subdomain": self.subdomain(), 
-        "portCheck": self.portCheck(),  
-        "Iframe": self.Iframe(), 
-        "urlTOhttp": self.urlTOhttp(), 
-        "returnDomain": self.returnDomain(), 
+        "Base": self.base, 
+        "Domain": self.returnDomain(), 
+        "Secure": self.HttpsToken(), 
+        "DNS":self.DNS(),
+		"UrlRespose": self.UrlRespose(), 
+		"DOMRedirects": self.DOMRedirects(),
+		"MetaTags": self.GetMetaTagsURL(), 
+		"Links": self.GetLinksFromURL(),
+		"Emails": self.Email(),
+		"Forms": self.Forms(),
+		"Shortners": self.ShortingSearch(), 
+        "Trackers": self.Trackers(), 
+        "HIDEvents":{
+            "onmouseover": self.onmouseover(),
+            "onmouseclick":self.onmouseclick(),
+            "onkeydown":self.onkeydown()
+        },
         "whois": self.whois(), 
-        "length": self.length(), 
-        "ShortingSearch": self.ShortingSearch(), 
-        "HttpsToken": self.HttpsToken(), 
-        "SFH": self.SFH(), 
+        # "prefixURL": self.prefixURL(), 
+        # "subdomain": self.subdomain(), 
+        # "portCheck": self.portCheck(),  
+        # "Iframe": self.Iframe(), 
+        # "length": self.length(), 
+        # "ShortingSearch": self.ShortingSearch(), 
+        # "SFH": self.SFH(), 
         }
         return results
 		
     def urlTOhttp(self):
         if not re.match(r"^https?", self.url):
             self.url = "http://" + self.url
+            
+        parsed_url = urlparse(self.url)
+        baseUrl = f"{parsed_url.scheme}://{parsed_url.hostname}"
+        if parsed_url.port:
+            baseUrl = f"{parsed_url.scheme}://{parsed_url.hostname}:{parsed_url.port}"
+        self.base = baseUrl
+        print('\n \n \n')
+        print(self.url)
+        print(self.base)
+        print('\n \n \n')
         return self.url
 
     def returnDomain(self):
@@ -60,22 +82,32 @@ class extract_data():
         elif len(self.url) >= 54 and len(self.url) <= 75:
             return "False"
         else:
-            return Count(self.url)
+            return len(self.url)
 
     def ShortingSearch(self):
-        match = re.search('bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|'
-		'yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|'
-		'short\.to|BudURL\.com|ping\.fm|post\.ly|Just\.as|bkite\.com|snipr\.com|fic\.kr|loopt\.us|'
-		'doiop\.com|short\.ie|kl\.am|wp\.me|rubyurl\.com|om\.ly|to\.ly|bit\.do|t\.co|lnkd\.in|'
-		'db\.tt|qr\.ae|adf\.ly|goo\.gl|bitly\.com|cur\.lv|tinyurl\.com|ow\.ly|bit\.ly|ity\.im|'
-		'q\.gs|is\.gd|po\.st|bc\.vc|twitthis\.com|u\.to|j\.mp|buzurl\.com|cutt\.us|u\.bb|yourls\.org|'
-		'x\.co|prettylinkpro\.com|scrnch\.me|filoops\.info|vzturl\.com|qr\.net|1url\.com|tweez\.me|v\.gd|tr\.im|link\.zip\.net', self.url)
-        result = 'False' if match else 'True'
-        return result
+        # match = re.search('bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|'
+		# 'yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|'
+		# 'short\.to|BudURL\.com|ping\.fm|post\.ly|Just\.as|bkite\.com|snipr\.com|fic\.kr|loopt\.us|'
+		# 'doiop\.com|short\.ie|kl\.am|wp\.me|rubyurl\.com|om\.ly|to\.ly|bit\.do|t\.co|lnkd\.in|'
+		# 'db\.tt|qr\.ae|adf\.ly|goo\.gl|bitly\.com|cur\.lv|tinyurl\.com|ow\.ly|bit\.ly|ity\.im|'
+		# 'q\.gs|is\.gd|po\.st|bc\.vc|twitthis\.com|u\.to|j\.mp|buzurl\.com|cutt\.us|u\.bb|yourls\.org|'
+		# 'x\.co|prettylinkpro\.com|scrnch\.me|filoops\.info|vzturl\.com|qr\.net|1url\.com|tweez\.me|v\.gd|tr\.im|link\.zip\.net', self.response.text.lower())
+        # result = 'False' if match else 'True'
+        shortener_domains = [
+            'bit\.ly', 'goo\.gl', 'shorte\.st', 'go2l\.ink', 'x\.co', 'ow\.ly', 't\.co', 'tinyurl', 'tr\.im', 'is\.gd', 'cli\.gs',
+            'yfrog\.com', 'migre\.me', 'ff\.im', 'tiny\.cc', 'url4\.eu', 'twit\.ac', 'su\.pr', 'twurl\.nl', 'snipurl\.com',
+            'short\.to', 'BudURL\.com', 'ping\.fm', 'post\.ly', 'Just\.as', 'bkite\.com', 'snipr\.com', 'fic\.kr', 'loopt\.us',
+            'doiop\.com', 'short\.ie', 'kl\.am', 'wp\.me', 'rubyurl\.com', 'om\.ly', 'to\.ly', 'bit\.do', 't\.co', 'lnkd\.in',
+            'db\.tt', 'qr\.ae', 'adf\.ly', 'goo\.gl', 'bitly\.com', 'cur\.lv', 'tinyurl\.com', 'ow\.ly', 'bit\.ly', 'ity\.im',
+            'q\.gs', 'is\.gd', 'po\.st', 'bc\.vc', 'twitthis\.com', 'u\.to', 'j\.mp', 'buzurl\.com', 'cutt\.us', 'u\.bb', 'yourls\.org',
+            'x\.co', 'prettylinkpro\.com', 'scrnch\.me', 'filoops\.info', 'vzturl\.com', 'qr\.net', '1url\.com', 'tweez\.me', 'v\.gd', 'tr\.im',
+            'link\.zip\.net'
+        ]
+        pattern = r'\b(?:https?://)?(?:www\.)?(?:' + '|'.join(shortener_domains) + r')\b(?:/\S*)?'
+        regex = re.compile(pattern, re.IGNORECASE)
+        match = regex.findall(self.response.text.lower())
+        return list(set(match))
 
-    def symboles(self):
-        result = 'False' if re.findall("@", self.url) else 'True'
-        return result
 
     def prefixURL(self):
         result = "False" if re.findall(
@@ -100,21 +132,24 @@ class extract_data():
 
     def GetResponse(self):
         try:
-            response = requests.get(self.url)
+            self.response = requests.get(self.url,verify=False)
             print("------------------")
-            print(response)
+            #print(self.response.content)
+            #print(self.response.text)
         except:
-            response = ""
-        return response
+            self.response.text = ""
+        return self.response
+
 
     def GetSoup(self):
         try:
-            response = requests.get(self.url)
+            response = requests.get(self.url,verify=False)
             soup = BeautifulSoup(response.text, 'html.parser')
         except:
             response = ""
             soup = -999
         return soup
+    
 
     def SFH(self):
         _soup_ = self.GetSoup()
@@ -132,33 +167,72 @@ class extract_data():
                 return 'True'
                 break
 
-    def AbnormalURL(self):
-        # idk but there some error when i test : response<200> & return False
-        _response_ = self.GetResponse()
-        print(_response_)
-        if _response_ == "":
-            return "False"
-        else:
-            if _response_.text == "":
-                return "True"
-            else:
-                return "False"
-
-    def RedirectURL(self):
-        _response_ = self.GetResponse()
+    def GetLinksFromURL(self):
+        #get all links from the url
+        _response_ = self.response.text
         # print(_response_)
         if _response_ == "":
-            return "False"
+            return []
         else:
-            if len(_response_.history) <= 1:
-                return "False"
-            elif len(_response_.history) <= 4:
-                return "False"
-            else:
-                return "True"
+            soup = BeautifulSoup(_response_, 'html.parser') 
+            tags = soup.find_all('a')+soup.find_all('link')+soup.find_all('script')+soup.find_all('area')+soup.find_all('img')+soup.find_all('iframe')+soup.find_all('audio')+soup.find_all('video')
+            links = list(set([obj.get('href') or obj.get('src') or obj.get('data-src') for obj in tags]))
+            ret = [link if str(link).startswith(('http://', 'https://')) else self.base+str(link or '') for link in links]
+            return ret
+        
+        
+    def DOMRedirects(self):
+        #get all meta tags from the url
+        _response_ = self.response.text
+        if _response_ == "":
+            return {}
+        else:
+            soup = BeautifulSoup(_response_, 'html.parser') 
+            metaTags = soup.find_all('script')
+            ret = []
+            patterns = {
+                'location_replace': r'location\.replace\(["\']([^"\']+)["\']\)',
+                'location_assign': r'location\.assign\(["\']([^"\']+)["\']\)',
+                'window_location_href': r'window\.location\.href\s?=\s?["\']([^"\']+)["\']',
+                'window_location_assign': r'window\.location\.assign\(["\']([^"\']+)["\']\)'
+            }
+            for tag in metaTags:
+                for pattern in patterns.values():
+                    matches = re.findall(pattern,str(tag))
+                    if matches:
+                        ret=ret+matches
+            ret = list(set(ret))
+            return ret
+        
+        
+    def Forms(self):
+        #get all meta tags from the url
+        _response_ = self.response.text
+        if _response_ == "":
+            return {}
+        else:
+            soup = BeautifulSoup(_response_, 'html.parser') 
+            metaTags = soup.find_all('form')
+            ret = []
+            for tag in metaTags:
+                ret.append({
+                    "content":tag,
+                    "method":tag.get("method"),
+                    "target":tag.get("action")
+                })
+            return ret
+
+
+    def UrlRespose(self):
+        ret = {}
+        ret["status"] = self.response.status_code
+        if self.response.history:
+            ret["redirect"] = self.response.url
+        return ret
+    
 
     def onmouseover(self):
-        _response_ = self.GetResponse()
+        _response_ = self.response
         if _response_ == "":
             return "False"
         else:
@@ -166,27 +240,82 @@ class extract_data():
                 return "True"
             else:
                 return "False"
-
-    def Rightclick(self):
-        _response_ = self.GetResponse()
-        if re.findall(r"event.button ", _response_.text):
-            return "True"
-        else:
+            
+            
+    def onmouseclick(self):
+        _response_ = self.response
+        if _response_ == "":
             return "False"
-
-    def PopUpWindow(self):
-        _response_ = self.GetResponse()
-        if re.findall(r"alert\(", _response_.text):
-            return "True"
         else:
+            if re.findall("<script>.+click.+</script>", _response_.text) or re.findall("click", _response_.text):
+                return "True"
+            else:
+                return "False"
+            
+    def onkeydown(self):
+        _response_ = self.response
+        if _response_ == "": 
             return "False"
+        else:
+            if re.findall("<script>.+keydown.+</script>", _response_.text) or re.findall("keydown", _response_.text):
+                return "True"
+            else:
+                return "False"
+            
+    def Trackers(self):
+        _response_ = self.response
+        if _response_ == "": 
+            return []
+        else:
+            pattern = r'\bhttps?://\S*?(analytics|tracker)\S*\b'
+            links = [link if re.findall(pattern, link) else "" for link in self.GetLinksFromURL()]
+            links = [x for x in links if x != ""]
+            return list(set(links))
+        
+    def Email(self):
+        _response_ = self.response
+        if _response_ == "": 
+            return []
+        else:
+            pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+            matches = re.findall(pattern, self.response.text.lower())
+            return list(set(matches))
+        
+
+
+    def GetMetaTagsURL(self):
+        #get all meta tags from the url
+        _response_ = self.response.text
+        if _response_ == "":
+            return {}
+        else:
+            soup = BeautifulSoup(_response_, 'html.parser') 
+            metaTags = soup.find_all('meta')
+            ret = {}
+            for tag in metaTags:
+                ret[tag.get("id") or "tagitem"] = tag.get("content")
+            return ret
+        
+    # def Shortners(self):
+    #     _response_ = self.response
+    #     if _response_ == "": 
+    #         return []
+    #     else:
+    #         pattern = r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    #         matches = re.findall(pattern, self.response.text.lower())
+    #         return list(set(matches))
+
 
     def Iframe(self):
-        _response_ = self.GetResponse()
+        _response_ = self.response#self.GetResponse()
         if re.findall(r"[<iframe>|<frameBorder>]", _response_.text):
             return "True"
         else:
             return "False"
+        
+
+    def DNS(self):
+        return pydig.query(self.returnDomain(), 'A')+pydig.query(self.returnDomain(), 'NS')
 
 
  
