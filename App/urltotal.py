@@ -9,30 +9,38 @@ class VTotalAPI():
 
 
 	def __init__(self,url):
-		self.VirusTotal_API_key = "8265aa381c6dbe04fa0c7c7f04d9284d3bc473152f188821b83c5154e035241c" # GetConfig().__api__("Virustotal")["KEY"]
+		self.VirusTotal_API_key = "" # GetConfig().__api__("Virustotal")["KEY"]
 	
 		self.url  = url
+		self.default = {
+         "malicious":None,
+         "suspicious":None,
+         "undetected":None,
+         "harmless":None,
+         "timeout":None
+      }
 	 
 
 	
 
 	def run(self):
 		try:
-			print(self.VirusTotal_API_key)
 			vtotal = Virustotal(API_KEY=self.VirusTotal_API_key,API_VERSION=3)
 			resp = vtotal.request("urls", params={"url": self.url}, method="POST")
+			
+			if(resp.status_code != 200):
+				return self.default
+			
+			print(resp.data)
 
-			print("Virus total:")
-			print(resp.status_code)
-			print(resp.requests_response)
-
-			url_resp = resp.json()
-			scan_id = url_resp["scan_id"]
-			analysis_resp = vtotal.request("urls/report", params={"resource": scan_id})
-			b = analysis_resp.json()
-			return b["scans"]
+			scan_id = resp.data["id"]
+			analysis_resp = vtotal.request("analyses/"+scan_id)
+			if(analysis_resp.status_code != 200):
+				return self.default
+			
+			print(analysis_resp.data["attributes"]["stats"])
+			return analysis_resp.data["attributes"]["stats"]
 		except Exception as e:
-			print(e)
-			return {"error check connection please !!"}
+			return self.default
 
 
