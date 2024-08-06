@@ -27,7 +27,6 @@ from App.SuspiciousDLL import *
 from App.signaturecheck import *
 from App.FilesHashes import FileInfo  
 from App.Pe_GetInfo import PEInfo
-from App.WebSnapShot import WebSnapShot
 from App.models import UserModel,db,login,keymodel,MalFilesModel,MalUrlsModel
 
 
@@ -275,9 +274,8 @@ async def scan_url():
 		url  = request.form['urladdress']
 		geturltotal = VTotalAPI(url).run()
 		print(geturltotal)
-		lexical_features = extract_data(url).results()
+		lexical_features = await extract_data(url).results()
 		ml =  malicious_url_ML(url).run()
-		screenshot = await WebSnapShot(url).run()
 		detected = True if ((geturltotal["malicious"]!= None and geturltotal["malicious"] > 0) or ml['etat']=="BAD") else False
 		print(geturltotal["malicious"])
 		print(ml['etat'])
@@ -287,7 +285,7 @@ async def scan_url():
 		# db.session.add(malur)
 		# db.session.commit()
 		return render_template('testFileResults.html',detected = detected,
-						 lexical_features = lexical_features , screenshot = screenshot,
+						 lexical_features = lexical_features ,
 						 virustotalresponse = geturltotal , ml=ml)
 	else:
 		abort(450)
