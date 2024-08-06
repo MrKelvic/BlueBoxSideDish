@@ -21,13 +21,13 @@ html{
 }
 body {
   font-family: "Open Sans", sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   /* color: #fff; */
   color: #161616;
   background: #ffffff !important;
   font-weight: 400;
   position: relative;
-  width:90%;
+  width:94%;
   margin: 0px auto !important;
   min-height: 100vh;
   background: unset;
@@ -41,7 +41,12 @@ a:hover {
   outline: none;
   text-decoration: none;
 }
-
+code{
+  width: 100%;
+  display: block;
+  text-wrap: balance !important;
+  padding: 5px !important;
+}
 
 
 /* ==========  keyframes start  =========== */
