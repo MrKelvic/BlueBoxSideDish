@@ -5,6 +5,9 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 import pydig
+import uuid
+from App.WebSnapShot import WebSnapShot
+
 
 
 class extract_data():
@@ -16,7 +19,7 @@ class extract_data():
         self.GetResponse()
 
 
-    def results(self):
+    async def results(self):
         results ={}
         results ={
         "Base": self.base, 
@@ -36,6 +39,7 @@ class extract_data():
             "onmouseclick":self.onmouseclick(),
             "onkeydown":self.onkeydown()
         },
+		"ScreenShot":await self.GetScreenShot(),
         "whois": self.whois(), 
         # "prefixURL": self.prefixURL(), 
         # "subdomain": self.subdomain(), 
@@ -317,6 +321,11 @@ class extract_data():
 
     def DNS(self):
         return pydig.query(self.returnDomain(), 'A')+pydig.query(self.returnDomain(), 'NS')
+    
+
+    async def GetScreenShot(self):
+        path = await WebSnapShot(self.url).run()
+        return path
 
 
  
